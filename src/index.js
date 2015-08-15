@@ -1,6 +1,6 @@
 const args = process.argv.slice(2)
 
 // local modules
-const howdy = require('./howdy')
+const dollarToString = require('./dollarToString')
 
-console.log(howdy(args[0]))
+console.log(dollarToString(args[0]))
