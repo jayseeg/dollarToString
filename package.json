@@ -1,0 +1,25 @@
+{
+  "name": "dollartostring",
+  "version": "1.0.0",
+  "description": "Converts dollars to strings",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:mocha-traceur -c --reporter landing -w ./test/*.js",
+    "start": "node --harmony ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jayseeg/dollarToString.git"
+  },
+  "author": "@jayseeg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jayseeg/dollarToString/issues"
+  },
+  "homepage": "https://github.com/jayseeg/dollarToString#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "mocha-traceur": "^2.1.0"
+  }
+}
