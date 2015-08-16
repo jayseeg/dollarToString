@@ -1,3 +1,5 @@
+'use strict'
+
 // Constants
 const teensDigits = require('./constants').teensDigits
 const tensDigits = require('./constants').tensDigits
