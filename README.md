@@ -10,6 +10,3 @@ Converts dollars to strings
 
 ## Test
 ```npm test```
-
-Or watch for changes with:
-```npm run watch```
