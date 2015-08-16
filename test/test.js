@@ -3,6 +3,8 @@ const assert = require('assert')
 // local modules
 const dollarToString = require('../src/dollarToString').dollarToString
 const transformTeensTens = require('../src/dollarToString').transformTeensTens
+const transformHundreds = require('../src/dollarToString').transformHundreds
+const transformThreeDigits = require('../src/dollarToString').transformThreeDigits
 
 describe('dollarToString.js', () => {
   describe('#transformTeensTens', () => {
@@ -43,6 +45,35 @@ describe('dollarToString.js', () => {
     })
   })
 
+  describe('#transformHundreds', () => {
+    it('should return return blank string for non hundreds', () => {
+      assert.equal('', transformHundreds(99))
+    })
+    it('should return string number and hundreds for hundreds', () => {
+      assert.equal('one hundred', transformHundreds(100))
+      assert.equal('nine hundred', transformHundreds(999))
+    })
+  })
+
+  describe('#transformThreeDigits', () => {
+    it('should return string version of three digit numbers', () => {
+      assert.equal('one hundred', transformThreeDigits(100))
+      assert.equal('one hundred one', transformThreeDigits(101))
+      assert.equal('one hundred eleven', transformThreeDigits(111))
+      assert.equal('one hundred twenty-three', transformThreeDigits(123))
+    })
+    it('should return string version of two digit numbers', () => {
+      assert.equal('eleven', transformThreeDigits(11))
+      assert.equal('ninety-two', transformThreeDigits(92))
+    })
+    it('should return string version of single digit numbers', () => {
+      assert.equal('one', transformThreeDigits(1))
+    })
+    it('should return empty string for no input', () => {
+      assert.equal('', transformThreeDigits(0))
+    })
+  })
+
   describe('#dollarToString()', () => {
     it('should return blank string for 0', () => {
       assert.equal('', dollarToString(0))
@@ -52,7 +83,7 @@ describe('dollarToString.js', () => {
       assert.equal('One dollar', dollarToString(1))
       assert.equal('Twelve dollars', dollarToString(12))
       assert.equal('Twenty-three dollars', dollarToString(23))
-      // assert.equal('One hundred twenty-three dollars', dollarToString(123))
+      assert.equal('One hundred twenty-three dollars', dollarToString(123))
       // assert.equal('Two thousand one hundred twenty-three dollars', dollarToString(2123))
       // assert.equal('Twelve thousand one hundred twenty-three dollars', dollarToString(12123))
       // assert.equal('One hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(128123))

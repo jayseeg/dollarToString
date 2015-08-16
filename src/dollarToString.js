@@ -23,12 +23,36 @@ const transformTeensTens = number => {
     ? teensDigits[parseInt(strNumber.substr(-2), 10)]
     //else
     : tensDigits[parseInt(strNumber.substr(-2, 1), 10)] + dashedDigit
-      
+}
+
+const transformHundreds = number => {
+  const strNumber = String(number)
+
+  //if
+  return isHundreds(number)
+    //then
+    ? teensDigits[strNumber.substr(-3,1)] + ' hundred'
+    //else
+    : ''
+}
+
+const transformThreeDigits = number => {
+  const strNumber = String(number)
+  const hundreds = transformHundreds(number)
+  const tens = transformTeensTens(number)
+  //if
+  const spacer = tens !== '' && hundreds !== ''
+    //then
+    ? ' '
+    //else
+    : ''
+
+  return hundreds + spacer + tens
 }
 
 const dollarToString = (dollar) => {
   if (dollar === 0) return ''
-  const capitalized = capitalize(transformTeensTens(dollar))
+  const capitalized = capitalize(transformThreeDigits(dollar))
   const dollarized = dollarize(dollar, capitalized)
 
   return dollarized
@@ -37,4 +61,6 @@ const dollarToString = (dollar) => {
 module.exports = {
   dollarToString: dollarToString,
   transformTeensTens: transformTeensTens,
+  transformHundreds: transformHundreds,
+  transformThreeDigits: transformThreeDigits,
 }
