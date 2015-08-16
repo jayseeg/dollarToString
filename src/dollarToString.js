@@ -1,5 +1,6 @@
 const teensDigits = require('./constants').teensDigits
 const tensDigits = require('./constants').tensDigits
+const largeNumberNames = require('./constants').largeNumberNames
 
 // Utils
 const capitalize = require('./util').capitalize
@@ -50,9 +51,47 @@ const transformThreeDigits = number => {
   return hundreds + spacer + tens
 }
 
+const stringSegmenter = dollar => {
+  const str = String(dollar)
+  const returnArr = []
+  const l = str.length
+  const remainder = l % 3
+  for (let i = 0; i < l; i += 3) {
+    //if
+    const slice = remainder && l - i === remainder
+      //then
+      ? remainder
+      //else
+      : 3
+
+    returnArr.push(str.substr(-(i + 3), slice))
+  }
+
+  return returnArr
+}
+
+const stringJoiner = segments => {
+  let returnStr = ''
+  for (let i = 0, l = segments.length; i < l; i++) {
+    const segmentString = transformThreeDigits(segments[i])
+    //if
+    const largeNumberName = l > 1 && i !== l
+      //then
+      ? largeNumberNames[i]
+      //else
+      : ''
+    returnStr = segmentString + largeNumberName + returnStr
+  }
+
+  return returnStr
+}
+
 const dollarToString = (dollar) => {
   if (dollar === 0) return ''
-  const capitalized = capitalize(transformThreeDigits(dollar))
+
+  const segments = stringSegmenter(dollar)
+  const stringNumber = stringJoiner(segments)
+  const capitalized = capitalize(stringNumber)
   const dollarized = dollarize(dollar, capitalized)
 
   return dollarized
@@ -63,4 +102,6 @@ module.exports = {
   transformTeensTens: transformTeensTens,
   transformHundreds: transformHundreds,
   transformThreeDigits: transformThreeDigits,
+  stringSegmenter: stringSegmenter,
+  stringJoiner: stringJoiner,
 }

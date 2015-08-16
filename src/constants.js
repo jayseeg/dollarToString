@@ -34,7 +34,15 @@ const tensDigits = [
   'ninety',
 ]
 
+const largeNumberNames = [
+  '',
+  ' thousand ',
+  ' million ',
+  ' billion ',
+]
+
 module.exports = {
   teensDigits: teensDigits,
   tensDigits: tensDigits,
+  largeNumberNames: largeNumberNames,
 }

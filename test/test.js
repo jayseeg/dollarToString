@@ -5,9 +5,11 @@ const dollarToString = require('../src/dollarToString').dollarToString
 const transformTeensTens = require('../src/dollarToString').transformTeensTens
 const transformHundreds = require('../src/dollarToString').transformHundreds
 const transformThreeDigits = require('../src/dollarToString').transformThreeDigits
+const stringSegmenter = require('../src/dollarToString').stringSegmenter
+const stringJoiner = require('../src/dollarToString').stringJoiner
 
 describe('dollarToString.js', () => {
-  describe('#transformTeensTens', () => {
+  describe('#transformTeensTens()', () => {
     it('should return single digit numbers as strings', () => {
       assert.equal('', transformTeensTens(0))
       assert.equal('one', transformTeensTens(1))
@@ -45,7 +47,7 @@ describe('dollarToString.js', () => {
     })
   })
 
-  describe('#transformHundreds', () => {
+  describe('#transformHundreds()', () => {
     it('should return return blank string for non hundreds', () => {
       assert.equal('', transformHundreds(99))
     })
@@ -55,7 +57,7 @@ describe('dollarToString.js', () => {
     })
   })
 
-  describe('#transformThreeDigits', () => {
+  describe('#transformThreeDigits()', () => {
     it('should return string version of three digit numbers', () => {
       assert.equal('one hundred', transformThreeDigits(100))
       assert.equal('one hundred one', transformThreeDigits(101))
@@ -74,6 +76,30 @@ describe('dollarToString.js', () => {
     })
   })
 
+  describe('#stringSegmenter()', () => {
+    it('should split a number into an array of three digit strings', () => {
+      assert.deepEqual(['789', '456', '123'], stringSegmenter('123456789'))
+      assert.deepEqual(['789', '456', '123', '1'], stringSegmenter('1123456789'))
+    })
+  })
+
+  describe('#stringJoiner()', () => {
+    it('should join each set of three digits transformed to strings with large number names', () => {
+      assert.equal('three', stringJoiner(['3']))
+      assert.equal('twenty-three', stringJoiner(['23']))
+      assert.equal('one hundred twenty-three', stringJoiner(['123']))
+      assert.equal('three thousand four hundred fifty-six', stringJoiner(['456', '3']))
+      assert.equal('twenty-three thousand four hundred fifty-six', stringJoiner(['456', '23']))
+      assert.equal('one hundred twenty-three thousand four hundred fifty-six', stringJoiner(['456', '123']))
+      assert.equal('three million four hundred fifty-six thousand seven hundred eighty-nine', stringJoiner(['789', '456', '3']))
+      assert.equal('twenty-three million four hundred fifty-six thousand seven hundred eighty-nine', stringJoiner(['789', '456', '23']))
+      assert.equal('one hundred twenty-three million four hundred fifty-six thousand seven hundred eighty-nine', stringJoiner(['789', '456', '123']))
+      assert.equal('seven billion one hundred twenty-three million four hundred fifty-six thousand seven hundred eighty-nine', stringJoiner(['789', '456', '123', '7']))
+      assert.equal('eighty-seven billion one hundred twenty-three million four hundred fifty-six thousand seven hundred eighty-nine', stringJoiner(['789', '456', '123', '87']))
+      assert.equal('nine hundred eighty-seven billion one hundred twenty-three million four hundred fifty-six thousand seven hundred eighty-nine', stringJoiner(['789', '456', '123', '987']))
+    })
+  })
+
   describe('#dollarToString()', () => {
     it('should return blank string for 0', () => {
       assert.equal('', dollarToString(0))
@@ -84,16 +110,16 @@ describe('dollarToString.js', () => {
       assert.equal('Twelve dollars', dollarToString(12))
       assert.equal('Twenty-three dollars', dollarToString(23))
       assert.equal('One hundred twenty-three dollars', dollarToString(123))
-      // assert.equal('Two thousand one hundred twenty-three dollars', dollarToString(2123))
-      // assert.equal('Twelve thousand one hundred twenty-three dollars', dollarToString(12123))
-      // assert.equal('One hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(128123))
-      // assert.equal('Three million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(3128123))
-      // assert.equal('Thirty-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(39128123))
-      // assert.equal('Three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(399128123))
-      // assert.equal('Seven billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(7399128123))
-      // assert.equal('Seventy-four billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(74399128123))
-      // assert.equal('Seven hundred fourty-five billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(745399128123))
-      // // that feels like enough
+      assert.equal('Two thousand one hundred twenty-three dollars', dollarToString(2123))
+      assert.equal('Twelve thousand one hundred twenty-three dollars', dollarToString(12123))
+      assert.equal('One hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(128123))
+      assert.equal('Three million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(3128123))
+      assert.equal('Thirty-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(39128123))
+      assert.equal('Three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(399128123))
+      assert.equal('Seven billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(7399128123))
+      assert.equal('Seventy-four billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(74399128123))
+      assert.equal('Seven hundred fourty-five billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(745399128123))
+      // that feels like enough
     })
 
     it('should return english version of arg with decimals', () => {
