@@ -7,6 +7,8 @@ const transformHundreds = require('../src/dollarToString').transformHundreds
 const transformThreeDigits = require('../src/dollarToString').transformThreeDigits
 const stringSegmenter = require('../src/dollarToString').stringSegmenter
 const stringJoiner = require('../src/dollarToString').stringJoiner
+const decimalSegmenter = require('../src/dollarToString').decimalSegmenter
+const decimalJoiner = require('../src/dollarToString').decimalJoiner
 
 describe('dollarToString.js', () => {
   describe('#transformTeensTens()', () => {
@@ -100,6 +102,24 @@ describe('dollarToString.js', () => {
     })
   })
 
+  describe('#decimalSegmenter()', () => {
+    it('should return any decimals as a two digit string', () => {
+      assert.equal('', decimalSegmenter(1))
+      assert.equal('01', decimalSegmenter(.01))
+      assert.equal('01', decimalSegmenter(1.01))
+      assert.equal('99', decimalSegmenter(.99))
+    })
+  })
+
+  describe('#decimalJoiner()', () => {
+    it('should join a string number to a decimal string', () => {
+      assert.equal('one and 01/100', decimalJoiner('one', '01'))
+      assert.equal('one and 99/100', decimalJoiner('one', '99'))
+      assert.equal('one', decimalJoiner('one', ''))
+      assert.equal('99/100', decimalJoiner('', '99'))
+    })
+  })
+
   describe('#dollarToString()', () => {
     it('should return blank string for 0', () => {
       assert.equal('', dollarToString(0))
@@ -123,12 +143,13 @@ describe('dollarToString.js', () => {
     })
 
     it('should return english version of arg with decimals', () => {
-      // assert.equal('One and 01/100 dollars', dollarToString(1.01))
-      // assert.equal('Twenty-seven and 27/100 dollars', dollarToString(27.27))
+      assert.equal('01/100 dollar', dollarToString(.01))
+      assert.equal('One and 01/100 dollars', dollarToString(1.01))
+      assert.equal('Twenty-seven and 27/100 dollars', dollarToString(27.27))
     })
 
     it('should return the example text with the example arg', () => {
-      // assert.equal('Two thousand five hundred twenty-three and 04/100 dollars', dollarToString(2523.04))
+      assert.equal('Two thousand five hundred twenty-three and 04/100 dollars', dollarToString(2523.04))
     })
   })
 })

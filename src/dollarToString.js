@@ -53,8 +53,15 @@ const transformThreeDigits = number => {
 
 const stringSegmenter = dollar => {
   const str = String(dollar)
+  const decimalIndex = str.indexOf('.')
+  //if
+  const noDecimalStr = decimalIndex !== -1
+    //then
+    ? str.substr(0, decimalIndex)
+    //else
+    : str
   const returnArr = []
-  const l = str.length
+  const l = noDecimalStr.length
   const remainder = l % 3
   for (let i = 0; i < l; i += 3) {
     //if
@@ -64,7 +71,7 @@ const stringSegmenter = dollar => {
       //else
       : 3
 
-    returnArr.push(str.substr(-(i + 3), slice))
+    returnArr.push(noDecimalStr.substr(-(i + 3), slice))
   }
 
   return returnArr
@@ -86,12 +93,38 @@ const stringJoiner = segments => {
   return returnStr
 }
 
+const decimalSegmenter = dollar => {
+  const str = dollar + '00'
+  const decimalIndex = str.indexOf('.')
+  if (decimalIndex === -1) return ''
+
+  return str.substr(decimalIndex + 1, 2)
+}
+
+const decimalJoiner = (stringNumber, decimals) => {
+  //if
+  const stringNumberAnd = stringNumber !== ''
+    //then
+    ? stringNumber + ' and ' 
+    //else
+    : ''
+
+  //if
+  return decimals !== ''
+    //then
+    ? stringNumberAnd + decimals + '/100'
+    //else
+    : stringNumber
+}
+
 const dollarToString = (dollar) => {
   if (dollar === 0) return ''
 
+  const decimals = decimalSegmenter(dollar)
   const segments = stringSegmenter(dollar)
   const stringNumber = stringJoiner(segments)
-  const capitalized = capitalize(stringNumber)
+  const stringNumberWithDecimal = decimalJoiner(stringNumber, decimals)
+  const capitalized = capitalize(stringNumberWithDecimal)
   const dollarized = dollarize(dollar, capitalized)
 
   return dollarized
@@ -104,4 +137,6 @@ module.exports = {
   transformThreeDigits: transformThreeDigits,
   stringSegmenter: stringSegmenter,
   stringJoiner: stringJoiner,
+  decimalSegmenter: decimalSegmenter,
+  decimalJoiner: decimalJoiner,
 }
