@@ -9,6 +9,7 @@ const stringSegmenter = require('../src/dollarToString').stringSegmenter
 const stringJoiner = require('../src/dollarToString').stringJoiner
 const decimalSegmenter = require('../src/dollarToString').decimalSegmenter
 const decimalJoiner = require('../src/dollarToString').decimalJoiner
+const roundDollar = require('../src/dollarToString').roundDollar
 
 describe('dollarToString.js', () => {
   describe('#transformTeensTens()', () => {
@@ -108,6 +109,7 @@ describe('dollarToString.js', () => {
       assert.equal('01', decimalSegmenter(.01))
       assert.equal('01', decimalSegmenter(1.01))
       assert.equal('99', decimalSegmenter(.99))
+      assert.equal('99', decimalSegmenter(.999))
     })
   })
 
@@ -117,6 +119,15 @@ describe('dollarToString.js', () => {
       assert.equal('one and 99/100', decimalJoiner('one', '99'))
       assert.equal('one', decimalJoiner('one', ''))
       assert.equal('99/100', decimalJoiner('', '99'))
+    })
+  })
+
+  describe('#roundDollar()', () => {
+    it('should round number to no more than two decimals', () => {
+      assert.equal(1, roundDollar(1.001))
+      assert.equal(.99, roundDollar(.991))
+      assert.equal(1, roundDollar(.999))
+      assert.equal(1, roundDollar(1))
     })
   })
 
@@ -139,13 +150,18 @@ describe('dollarToString.js', () => {
       assert.equal('Seven billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(7399128123))
       assert.equal('Seventy-four billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(74399128123))
       assert.equal('Seven hundred fourty-five billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(745399128123))
-      // that feels like enough
+      assert.equal('Seven hundred fourty-five trillion seven hundred fourty-five billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(745745399128123))
+      assert.equal('Five quadrillion seven hundred fourty-five trillion seven hundred fourty-five billion three hundred ninety-nine million one hundred twenty-eight thousand one hundred twenty-three dollars', dollarToString(5745745399128123))
+      // and I'm out of js digits
     })
 
     it('should return english version of arg with decimals', () => {
       assert.equal('01/100 dollar', dollarToString(.01))
       assert.equal('One and 01/100 dollars', dollarToString(1.01))
       assert.equal('Twenty-seven and 27/100 dollars', dollarToString(27.27))
+      assert.equal('Twenty-seven and 28/100 dollars', dollarToString(27.277))
+      assert.equal('Twenty-eight dollars', dollarToString(27.999))
+      assert.equal('Twenty-seven and 99/100 dollars', dollarToString(27.991))
     })
 
     it('should return the example text with the example arg', () => {

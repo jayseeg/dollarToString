@@ -4,3 +4,5 @@ const args = process.argv.slice(2)
 const dollarToString = require('./dollarToString').dollarToString
 
 console.log(dollarToString(args[0]))
+
+module.exports = dollarToString

@@ -1,46 +1,64 @@
+// Constants
 const teensDigits = require('./constants').teensDigits
 const tensDigits = require('./constants').tensDigits
 const largeNumberNames = require('./constants').largeNumberNames
 
 // Utils
 const capitalize = require('./util').capitalize
-const dollarize = require('./util').dollarize
+const pluralize = require('./util').pluralize
 const hasTeens = require('./util').hasTeens
 const isHundreds = require('./util').isHundreds
 
-const transformTeensTens = number => {
-  const strNumber = '000' + number
+/**
+ * Transform tens and ones digits to string representation
+ * 
+ * @param {string} digitsString - the string to transform
+ * 
+ * @return {string} the transformed representation of the digits
+ * 
+ */
+const transformTeensTens = digitsString => {
+  const paddedDigits = '000' + digitsString
 
   //if
-  const dashedDigit = strNumber.substr(-1) !== '0'
+  const dashedDigit = paddedDigits.substr(-1) !== '0'
     //then
-    ? '-' + teensDigits[parseInt(strNumber.substr(-1), 10)]
+    ? '-' + teensDigits[parseInt(paddedDigits.substr(-1), 10)]
     //else
     : ''
 
   //if
-  return hasTeens(number)
+  return hasTeens(digitsString)
     //then
-    ? teensDigits[parseInt(strNumber.substr(-2), 10)]
+    ? teensDigits[parseInt(paddedDigits.substr(-2), 10)]
     //else
-    : tensDigits[parseInt(strNumber.substr(-2, 1), 10)] + dashedDigit
+    : tensDigits[parseInt(paddedDigits.substr(-2, 1), 10)] + dashedDigit
 }
 
-const transformHundreds = number => {
-  const strNumber = String(number)
-
+/**
+ * Transform hundreds digits to string representation
+ *
+ * @param {string} digitsString - the digit to transform
+ *
+ * @return {string} the string representation of the digit
+ *
+ */
+const transformHundreds = digitsString => {
   //if
-  return isHundreds(number)
+  return isHundreds(digitsString)
     //then
-    ? teensDigits[strNumber.substr(-3,1)] + ' hundred'
+    ? teensDigits[String(digitsString).substr(-3,1)] + ' hundred'
     //else
     : ''
 }
 
-const transformThreeDigits = number => {
-  const strNumber = String(number)
-  const hundreds = transformHundreds(number)
-  const tens = transformTeensTens(number)
+/**
+ *
+ */
+const transformThreeDigits = digitsString => {
+  const strNumber = String(digitsString)
+  const hundreds = transformHundreds(digitsString)
+  const tens = transformTeensTens(digitsString)
   //if
   const spacer = tens !== '' && hundreds !== ''
     //then
@@ -51,34 +69,51 @@ const transformThreeDigits = number => {
   return hundreds + spacer + tens
 }
 
+/**
+ * Maps dollar number into array of 3 digit strings
+ * 
+ * @param {number} dollar - the number to segment
+ * 
+ * @return {array} list of 3 digit string segments in reverse order
+ * 
+ */
 const stringSegmenter = dollar => {
-  const str = String(dollar)
-  const decimalIndex = str.indexOf('.')
+  const dollarString = String(dollar)
+  const decimalIndex = dollarString.indexOf('.')
+  // no need for decimals here
   //if
-  const noDecimalStr = decimalIndex !== -1
+  const noDecimalString = decimalIndex !== -1
     //then
-    ? str.substr(0, decimalIndex)
+    ? dollarString.substr(0, decimalIndex)
     //else
-    : str
+    : dollarString
+  const stringLength = noDecimalString.length
+  const remainder = stringLength % 3
   const returnArr = []
-  const l = noDecimalStr.length
-  const remainder = l % 3
-  for (let i = 0; i < l; i += 3) {
+  for (let i = 0; i < stringLength; i += 3) {
     //if
-    const slice = remainder && l - i === remainder
+    const subStringLength = remainder && stringLength - i === remainder
       //then
       ? remainder
       //else
       : 3
 
-    returnArr.push(noDecimalStr.substr(-(i + 3), slice))
+    returnArr.push(noDecimalString.substr(-(i + 3), subStringLength))
   }
 
   return returnArr
 }
 
+/**
+ * Joins transformed 3 digit segments into english number string
+ * 
+ * @param {array} segments - list of 3 digit string segments in reverse order
+ * 
+ * @return {string} english number string representation of segments in order
+ * 
+ */
 const stringJoiner = segments => {
-  let returnStr = ''
+  let returnString = ''
   for (let i = 0, l = segments.length; i < l; i++) {
     const segmentString = transformThreeDigits(segments[i])
     //if
@@ -87,21 +122,38 @@ const stringJoiner = segments => {
       ? largeNumberNames[i]
       //else
       : ''
-    returnStr = segmentString + largeNumberName + returnStr
+    returnString = segmentString + largeNumberName + returnString
   }
 
-  return returnStr
+  return returnString
 }
 
+/**
+ * Gets decimals off end of dollar number
+ * 
+ * @param {number} dollar - the dollar to get decimals from
+ * 
+ * @return {string} string of two digit number
+ * 
+ */
 const decimalSegmenter = dollar => {
-  const str = dollar + '00'
-  const decimalIndex = str.indexOf('.')
+  const dollarString = dollar + '00'
+  const decimalIndex = dollarString.indexOf('.')
   if (decimalIndex === -1) return ''
 
-  return str.substr(decimalIndex + 1, 2)
+  return dollarString.substr(decimalIndex + 1, 2)
 }
 
-const decimalJoiner = (stringNumber, decimals) => {
+/**
+ * Appends any decimals to end of supplied english number string
+ * 
+ * @param {string} stringNumber - english number string
+ * @param {string} stringDecimal - two digit decimal number string
+ * 
+ * @return {string} concatenated english number and decimal strings
+ * 
+ */
+const decimalJoiner = (stringNumber, stringDecimal) => {
   //if
   const stringNumberAnd = stringNumber !== ''
     //then
@@ -110,22 +162,43 @@ const decimalJoiner = (stringNumber, decimals) => {
     : ''
 
   //if
-  return decimals !== ''
+  return stringDecimal !== ''
     //then
-    ? stringNumberAnd + decimals + '/100'
+    ? stringNumberAnd + stringDecimal + '/100'
     //else
     : stringNumber
 }
 
-const dollarToString = (dollar) => {
-  if (dollar === 0) return ''
+/**
+ * Rounds number to no more than 2 decimals
+ * 
+ * @param {number} dollar - the number to round
+ * 
+ * @return {number} the rounded number
+ * 
+ */
+const roundDollar = dollar => {
+  return Number(Math.round(dollar * 100) / 100)
+}
 
-  const decimals = decimalSegmenter(dollar)
-  const segments = stringSegmenter(dollar)
+/**
+ * Transforms dollar number to english number string
+ * 
+ * @param {number} dollar - the number to be converted
+ * 
+ * @return {string} english number string representation of dollar number
+ * 
+ */
+const dollarToString = (dollar) => {
+  const roundedDollar = roundDollar(dollar)
+  if (roundedDollar === 0) return ''
+
+  const segments = stringSegmenter(roundedDollar)
   const stringNumber = stringJoiner(segments)
-  const stringNumberWithDecimal = decimalJoiner(stringNumber, decimals)
+  const stringDecimal = decimalSegmenter(roundedDollar)
+  const stringNumberWithDecimal = decimalJoiner(stringNumber, stringDecimal)
   const capitalized = capitalize(stringNumberWithDecimal)
-  const dollarized = dollarize(dollar, capitalized)
+  const dollarized = capitalized + ' ' + pluralize('dollar', roundedDollar)
 
   return dollarized
 }
@@ -139,4 +212,5 @@ module.exports = {
   stringJoiner: stringJoiner,
   decimalSegmenter: decimalSegmenter,
   decimalJoiner: decimalJoiner,
+  roundDollar: roundDollar,
 }

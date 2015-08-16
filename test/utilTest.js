@@ -3,7 +3,7 @@ const assert = require('assert')
 // local modules
 const dollarToString = require('../src/dollarToString')
 const capitalize = require('../src/util').capitalize
-const dollarize = require('../src/util').dollarize
+const pluralize = require('../src/util').pluralize
 const hasTeens = require('../src/util').hasTeens
 const isHundreds = require('../src/util').isHundreds
 
@@ -15,13 +15,13 @@ describe('util.js', () => {
     })
   })
 
-  describe('#dollarize()', () => {
+  describe('#pluralize()', () => {
     it('should return plural appended dollar for anything over 1', () => {
-      assert.equal('Two dollars', dollarize(2, 'Two'))
+      assert.equal('dollars', pluralize('dollar', 2))
     })
     it('should return singular appended dollar for 1 or less', () => {
-      assert.equal('One dollar', dollarize(1, 'One'))
-      // assert.equal('01/100 dollar', dollarize(.01, '01/100'))
+      assert.equal('dollar', pluralize('dollar', 1))
+      assert.equal('dollar', pluralize('dollar', .01))
     })
   })
 

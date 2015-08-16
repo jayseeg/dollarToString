@@ -39,6 +39,8 @@ const largeNumberNames = [
   ' thousand ',
   ' million ',
   ' billion ',
+  ' trillion ',
+  ' quadrillion ',
 ]
 
 module.exports = {
