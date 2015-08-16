@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  * Capitalizes first letter of a string
  * 
